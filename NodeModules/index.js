@@ -1,5 +1,6 @@
 //import {head, last, remove, range, countElements, isEqual} from "arrayUtils.js";
-var arrayUtils = require("./arrayUtils")
+var arrayUtils = require("./arrayUtils");
+var stringUtils = require("./stringUtils");
 
 arrayUtils.head();
 arrayUtils.head (['a','b','c']);
@@ -21,3 +22,12 @@ arrayUtils.countElements(['a','b','c',1,1,'1',2,true]);
 console.log();
 arrayUtils.isEqual([1,2,3],[1,2,3]);
 arrayUtils.isEqual([1,2,3],[1,2,'3']);
+
+console.log();
+stringUtils.capitalize([1,2,3],[1,2,3]);
+stringUtils.capitalize("aMAN");
+stringUtils.capitalize("");
+console.log();
+stringUtils.repeat("abc",2);
+stringUtils.repeat("aMAN","a");
+stringUtils.repeat("Hello",0);
