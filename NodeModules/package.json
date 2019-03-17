@@ -1,0 +1,11 @@
+{
+  "name": "node-modules",
+  "version": "1.0.0",
+  "description": "Basic array, string and object manipulation with function export",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Aman Yadav",
+  "license": "ISC"
+}
