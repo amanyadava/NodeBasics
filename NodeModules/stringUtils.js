@@ -1,5 +1,7 @@
 const ENABLE_PRINTS = true;
 
+var arrayUtils = require("./arrayUtils");
+
 function isString(string) {
     var isItString = false;
     if ((typeof string === 'string') ||
@@ -51,6 +53,9 @@ exports.repeat = function (string, num) {
             (num === undefined)) {
             throw "Required inputs string and/or num undefined";
         }
+        if (false == isString(string)) {
+            throw "Required input \'string\' should be of type string";
+        }
         if (isNaN(num)) {
             throw "Required input \'num\' should be of type integer";
         }
@@ -74,5 +79,33 @@ exports.repeat = function (string, num) {
             err += " - [input: " + string + "," + num + "]";
         }
         console.log("ERROR: repeat() - " + err);
+    }
+}
+
+exports.countChars = function (string) {
+    try {
+        if (string === undefined) {
+            throw "Required input \'string\' undefined";
+        }
+        if (false == isString(string)) {
+            throw "Required input \'string\' should be of type string";
+        }
+        var charArray = string.split("");
+        var countObj = arrayUtils.countElements(charArray);
+        var countObjOrdered = {};
+        Object.keys(countObj).sort().forEach(function(key) {
+            countObjOrdered[key] = countObj[key];
+        });
+        if (ENABLE_PRINTS) {
+            var str = "countChars(" + string + ") returned " + JSON.stringify(countObjOrdered);
+            console.log(str);
+        }
+        return countObjOrdered;
+    }
+    catch (err) {
+        if (ENABLE_PRINTS) {
+            err += " - [input: " + string + "]";
+        }
+        console.log("ERROR: countChars() - " + err);
     }
 }

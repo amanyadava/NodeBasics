@@ -31,3 +31,5 @@ console.log();
 stringUtils.repeat("abc",2);
 stringUtils.repeat("aMAN","a");
 stringUtils.repeat("Hello",0);
+console.log();
+stringUtils.countChars('Hello, the pie is in the oven');
