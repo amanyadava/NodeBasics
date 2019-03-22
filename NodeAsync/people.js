@@ -1,18 +1,10 @@
 const ENABLE_PRINTS = true;
 
-const fs = require('fs');
-const util = require('util');
-
-const readFileAsync = util.promisify(fs.readFile);
-
-async function readFile(string) {
-    data = await readFileAsync(string);
-    return data;
-}
+const fileUtils = require('./fileUtils');
 
 const peopleJson = './data/people.json';
 
-exports.getPersonById = function (id) {
+exports.getPersonById = async function (id) {
     try {
         if (id === undefined) {
             throw "Parameter id not specified";
@@ -23,37 +15,33 @@ exports.getPersonById = function (id) {
         if (id < 0) {
             throw "Parameter id should be positive integer - was " + id;
         }
-        readFile(peopleJson)
-        .then(function (result) {
-            dataObjArray = JSON.parse(result);
-            matchObj = null;
-            dataObjArray.forEach(function (obj) {
-                if (("id" in obj) &&
-                    (obj.id == id)) {
-                    matchObj = obj;
-                }
-            });
-            if (null != matchObj) {
-                if (ENABLE_PRINTS) {
-                    console.log("getPersonById(" + id + ") returned - " +
-                        matchObj.firstName + " " + matchObj.lastName);
-                }
-                return matchObj.firstName + " " + matchObj.lastName;
+        let dataString = await fileUtils.readFile(peopleJson);
+        dataObjArray = JSON.parse(dataString);
+        matchObj = null;
+        len = dataObjArray.length;
+        for (var i = 0; i < len; i++) {
+            if (dataObjArray[i].id === id) {
+                matchObj = dataObjArray[i];
+                break;
             }
-            else {
-                throw "No person found by id=" + id;
+        }
+        if (null != matchObj) {
+            if (ENABLE_PRINTS) {
+                console.log("getPersonById(" + id + ") returned - " +
+                    matchObj.firstName + " " + matchObj.lastName);
             }
-        })
-        .catch(function (err) {
-            console.log("ERROR: getPersonById(" + id + ") - " + err);
-        });
+            return matchObj.firstName + " " + matchObj.lastName;
+        }
+        else {
+            throw "No person found by id=" + id;
+        }
     }
     catch (err) {
         console.log("ERROR: getPersonById(" + id + ") - " + err);
     }
 }
 
-exports.lexIndex = function (index) {
+exports.lexIndex = async function (index) {
     try {
         if (index === undefined) {
             throw "Index unspecified";
@@ -64,84 +52,74 @@ exports.lexIndex = function (index) {
         if (index < 0) {
             throw "Index should be a positive integer, but was negative - " + index;
         }
-        readFile(peopleJson)
-        .then(function (result) {
-            dataObjArray = JSON.parse(result);
-            dataObjArray.sort(function(x, y) {
-                if (x.lastName < y.lastName) {
-                  return -1;
-                }
-                if (x.lastName > y.lastName) {
-                  return 1;
-                }
-                return 0;
-            });
+        let dataString = await fileUtils.readFile(peopleJson);
+        dataObjArray = JSON.parse(dataString);
+        dataObjArray.sort(function(x, y) {
+            if (x.lastName < y.lastName) {
+                return -1;
+            }
+            if (x.lastName > y.lastName) {
+                return 1;
+            }
+            return 0;
+        });
 
-            if (index < dataObjArray.length) {
-                personObj = dataObjArray[index];
-                if (ENABLE_PRINTS) {
-                    console.log("lexIndex(" + index + ") returned - " +
-                        personObj.firstName + " " + personObj.lastName);
-                }
-                return personObj.firstName + " " + personObj.lastName;
+        if (index < dataObjArray.length) {
+            personObj = dataObjArray[index];
+            if (ENABLE_PRINTS) {
+                console.log("lexIndex(" + index + ") returned - " +
+                    personObj.firstName + " " + personObj.lastName);
             }
-            else {
-                throw "index out of bounds. Only " + dataObjArray.length +
-                    " entries for people";
-            }
-        })
-        .catch(function (err) {
-            console.log("ERROR: lexIndex(" + index + ") - " + err);
-        })
+            return personObj.firstName + " " + personObj.lastName;
+        }
+        else {
+            throw "index out of bounds. Only " + dataObjArray.length +
+                " entries for people";
+        }
     }
     catch (err) {
         console.log("ERROR: lexIndex(" + index + ") - " + err);
     }
 }
 
-exports.firstNameMetrics = function() {
+exports.firstNameMetrics = async function() {
     try {
-        readFile(peopleJson)
-        .then(function (result) {
-            objArray = JSON.parse(result);
-            totalLetters = 0;
-            totalVowels = 0;
-            longestName = objArray[0].firstName;
-            shortestName = objArray[0].firstName;
-            vowels = ['a', 'e', 'i', 'o', 'u'];
-            objArray.forEach(function (obj) {
-                if ("firstName" in obj) {
-                    totalLetters += obj.firstName.length;
-                    iter = obj.firstName.length;
-                    if (iter > longestName.length) {
-                        longestName = obj.firstName;
-                    }
-                    if (iter < shortestName) {
-                        shortestName = obj.firstName;
-                    }
-                    while (--iter) {
-                        if (vowels.includes(obj.firstName.charAt(iter))) {
-                            totalVowels++;
-                        }
+        let dataString = await fileUtils.readFile(peopleJson);
+        objArray = JSON.parse(dataString);
+        totalLetters = 0;
+        totalVowels = 0;
+        longestName = objArray[0].firstName;
+        shortestName = objArray[0].firstName;
+        vowels = ['a', 'e', 'i', 'o', 'u'];
+        objArray.forEach(function (obj) {
+            if ("firstName" in obj) {
+                totalLetters += obj.firstName.length;
+                iter = obj.firstName.length;
+                if (iter > longestName.length) {
+                    longestName = obj.firstName;
+                }
+                if (iter < shortestName) {
+                    shortestName = obj.firstName;
+                }
+                while (--iter) {
+                    if (vowels.includes(obj.firstName.charAt(iter))) {
+                        totalVowels++;
                     }
                 }
-            });
-
-            if (ENABLE_PRINTS) {
-                console.log("firstNameMetrics(): " +
-                    "totalLetters=" + totalLetters +
-                    " totalVowels=" + totalVowels +
-                    " totalConsonants=" + (totalLetters - totalVowels) +
-                    " longestName=" + longestName +
-                    " shortestName=" + shortestName);
             }
-
-            return [totalLetters, totalVowels, totalLetters - totalVowels,
-                longestName, shortestName];
-        })
-        .catch(function (err) {
-            console.log("ERROR: firstNameMetrics() - " + err);
         });
+
+        if (ENABLE_PRINTS) {
+            console.log("firstNameMetrics(): " +
+                "totalLetters=" + totalLetters +
+                " totalVowels=" + totalVowels +
+                " totalConsonants=" + (totalLetters - totalVowels) +
+                " longestName=" + longestName +
+                " shortestName=" + shortestName);
+        }
+
+        return [totalLetters, totalVowels, totalLetters - totalVowels,
+            longestName, shortestName];
     }
     catch(err) {
         console.log("ERROR: firstNameMetrics() - " + err);
