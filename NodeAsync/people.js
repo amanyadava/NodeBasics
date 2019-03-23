@@ -125,3 +125,35 @@ exports.firstNameMetrics = async function() {
         console.log("ERROR: firstNameMetrics() - " + err);
     }
 }
+
+function isString(str) {
+    return Object.prototype.toString.call(str).toLowerCase() === '[object string]';
+}
+
+exports.getPersonByName = async function(firstName, lastName) {
+    try {
+        if ((firstName === undefined) ||
+            (lastName === undefined)) {
+            throw "firstName or lastName was not specified";
+        }
+        if (!isString(firstName) || !isString(lastName)) {
+            throw "firstName or lastName was not of string type";
+        }
+        let dataString = await fileUtils.readFile(peopleJson);
+        dataObjArray = JSON.parse(dataString);
+        matchedPerson = null;
+        var len = dataObjArray.length;
+        for (var i = 0; i < len; i++) {
+            if (dataObjArray[i].firstName === firstName &&
+                dataObjArray[i].lastName === lastName) {
+                matchedPerson = dataObjArray[i];
+                break;
+            }
+        }
+        return matchedPerson;
+    }
+    catch (err) {
+        console.log("ERROR: getPersonByName(" + firstName + "," + lastName +
+            ") - " + err);
+    }
+}
