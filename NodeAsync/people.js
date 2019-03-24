@@ -157,3 +157,18 @@ exports.getPersonByName = async function(firstName, lastName) {
             ") - " + err);
     }
 }
+
+exports.getPersonBySsn = async function (ssn) {
+    if (ssn === undefined || !isString(ssn)) {
+        throw "Invalid ssn - " + ssn;
+    }
+    let dataString = await fileUtils.readFile(peopleJson);
+    personObjArray = JSON.parse(dataString);
+    len = personObjArray.length;
+    for (var i = 0; i < len; i++) {
+        if (personObjArray[i].ssn == ssn) {
+            return personObjArray[i];
+        }
+    }
+    return null;
+}

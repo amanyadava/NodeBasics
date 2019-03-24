@@ -1,7 +1,6 @@
 const people = require('./people');
 const weather = require('./weather');
-
-//people.getFileData('./data/people.json');
+const work = require('./work');
 
 async function test() {
     await people.getPersonById(43); // Returns: "Brew Peat"
@@ -27,6 +26,20 @@ async function test() {
     await weather.shouldTheyGoOutside(); // Throws Error
     await weather.shouldTheyGoOutside("Bob"); // Throws Error
     await weather.shouldTheyGoOutside("Bob", "Smith"); // Throws Error
+
+    console.log();
+
+    await work.whereDoTheyWork("Demetra", "Durrand"); // Returns: "Demetra Durrand - Nuclear Power Engineer at Buzzshare. They will be fired."
+    await work.whereDoTheyWork("Hank", "Tarling"); // Returns: "Hank Tarling - Technical Writer at Babbleblab. They will not be fired."
+    await work.whereDoTheyWork(); // Throws Error
+    await work.whereDoTheyWork("Bob"); // Throws Error
+    await work.whereDoTheyWork("Bob", "Smith"); // Throws Error
+
+    console.log();
+
+    await work.findTheHacker("79.222.167.180"); // Returns: "Robert Herley is the hacker!"
+    await work.findTheHacker("foobar"); // Throws Error
+    await work.findTheHacker(); // Throws Error
 }
 
 test();
